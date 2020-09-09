@@ -4,6 +4,7 @@ import time
 import matplotlib.pylab as plt
 from scipy.interpolate import interp1d
 import numpy as np
+import pandas as pd 
 
 options = webdriver.ChromeOptions()
 driver = webdriver.Chrome(chrome_options=options)
@@ -86,9 +87,9 @@ for i in range(0, 5):
     champ = first_team.get(i)
     champ_position = positions.get(i)
     driver.get('https://champion.gg/champion/' + champ + '/' + champ_position)
-    time.sleep(1)
+    time.sleep(.5)
     html = driver.page_source
-    time.sleep(1)
+    time.sleep(.5)
     game_length = html.find('\"gameLength\"')
     window = html[game_length:game_length+300]
     first_bracket = window.find('[')
@@ -98,15 +99,19 @@ for i in range(0, 5):
     stats = re.findall(r'[\d\.\d]+', stats_str_replace)
     stats_int = [float(i) for i in stats]
     for i in range(len(stats_int)):
-        team1_dict[i] = (stats_int[i]/100)**10 + team1_dict[i]
+        if stats_int[i] < 1:
+            team1_dict[i] = 50 + team1_dict[i]
+            print('Error with {} for {} period.'.format(champ, time_dict.get(i)))
+        else:
+            team1_dict[i] = stats_int[i] + team1_dict[i]
 
 for i in range(0, 5):
     champ = second_team.get(i)
     champ_position = positions.get(i)
     driver.get('https://champion.gg/champion/' + champ + '/' + champ_position)
-    time.sleep(1)
+    time.sleep(.5)
     html = driver.page_source
-    time.sleep(1)
+    time.sleep(.5)
     game_length = html.find('\"gameLength\"')
     window = html[game_length:game_length+300]
     first_bracket = window.find('[')
@@ -116,13 +121,19 @@ for i in range(0, 5):
     stats = re.findall(r'[\d\.\d]+', stats_str_replace)
     stats_int = [float(i) for i in stats]
     for i in range(len(stats_int)):
-        team2_dict[i] = (stats_int[i]/100)**10 + team2_dict[i]
+        if stats_int[i] < 1:
+            team2_dict[i] = 50 + team2_dict[i]
+            print('Error with {} for {} period.'.format(champ, time_dict.get(i)))
+        else:
+            team2_dict[i] = stats_int[i] + team2_dict[i]
 
 for i in range (0, 5):
     print(final_calc(i))
 
-# plotting 
-team1_dict1 = {
+print(team1_dict)
+print(team2_dict)
+
+graph_dict = {
     0: 0,
     1: 0,
     2: 0,
@@ -130,7 +141,7 @@ team1_dict1 = {
     4: 0
 }
 
-team2_dict1 = {
+zero_line = {
     0: 0,
     1: 0,
     2: 0,
@@ -138,34 +149,29 @@ team2_dict1 = {
     4: 0
 }
 
-def final_calc1(time_index):
-    timex = time_dict.get(time_index)
-    total = team1_dict.get(time_index) + team2_dict.get(time_index)
-    team1_chance = round(team1_dict.get(time_index)/total * 100, 2)
+def graph_calc(time_index):
+    team1_chance = round(team1_dict.get(time_index) - team2_dict.get(time_index), 2)
     return team1_chance
 
-def final_calc2(time_index):
-    timex = time_dict.get(time_index)
-    total = team1_dict.get(time_index) + team2_dict.get(time_index)
-    team2_chance = round(team2_dict.get(time_index)/total * 100, 2)
-    return team2_chance
-
 for i in range(0, 5):
-    team1_dict1[i] = final_calc1(i)
-    team2_dict1[i] = final_calc2(i)
+    graph_dict[i] = graph_calc(i)
 
-lists = sorted(team1_dict1.items())
+# index = 0
+# for i in range(0, 5):
+#     if abs(graph_dict.get(i)) > index:
+#         index = int(abs(graph_dict.get(i)))
+
+lists = sorted(graph_dict.items())
 x1, y1 = zip(*lists)
-lists2 = sorted(team2_dict1.items())
-x2, y2 = zip(*lists2)
+zero = sorted(zero_line.items())
+x2, y2 = zip(*zero)
 f1 = interp1d(x1, y1, kind='cubic')
-f2 = interp1d(x2, y2, kind='cubic')
 xnew1 = np.linspace(0, 4, 300)
-xnew2 = np.linspace(0, 4, 300)
-plt.plot(xnew1, f1(xnew1), label=team_name1)
-plt.plot(xnew2, f2(xnew2), label=team_name2)
+plt.plot(xnew1, f1(xnew1), c='b', label=team_name1 + ' (+) ' + 'v. ' + team_name2 + ' (-)')
+plt.plot(x2, y2, 'r--')
+# plt.ylim(-(index), index)
 plt.xticks((0, 1, 2, 3, 4), ('20', '25', '30', '40', '50'))
 plt.xlabel('minutes')
-plt.ylabel('percent chance of win')
+plt.ylabel('+/- percent chance of win')
 plt.legend()
 plt.show()
