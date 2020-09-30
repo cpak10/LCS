@@ -99,6 +99,7 @@ for i in match_histories:
         time.sleep(5)
         fill_database(i)
         print('refreshed')
+	
 # exporting the df
 df = pd.DataFrame.from_dict(database, orient='index', columns=['team', 'patch', 'gamelength', 'towers', 'opp_towers', 'result'])
 df.to_excel('update_data.xlsx')
