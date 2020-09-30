@@ -41,7 +41,7 @@ time.sleep(10)
 # login = driver.find_element_by_xpath('/html/body/div/div/div/div[2]/div[1]/div/div[2]/div/div/div/div[1]/div/input')
 # password = driver.find_element_by_xpath('/html/body/div/div/div/div[2]/div[1]/div/div[2]/div/div/div/div[2]/div/input')
 # login.send_keys('squishycrispy')
-# password.send_keys('na3loonp')
+# password.send_keys('[INSERT PASS]')
 # login_button = driver.find_element_by_xpath('/html/body/div/div/div/div[2]/div[1]/div/button')
 # login_button.click()
 
