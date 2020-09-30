@@ -8,3 +8,12 @@ money_ball.py
 
 lcs_win.py
 - old version of the LCS prediction bot, no longer in use
+
+worlds_calibration.py
+- analyzes the data from previous Worlds to find weights to apply to predict this Worlds
+
+groups_calc.py
+- calculates the chances of teams making it out of groups
+
+leaguepedia.py
+- creates a database of recent games pulled from leaguepedia
