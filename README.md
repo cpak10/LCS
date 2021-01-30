@@ -1,5 +1,5 @@
 # LCS
-Tools to predict LCS matches.
+The following scripts are tools used to predict the outcome of League of Legends matches. The newest version of the match predictor uses a TensorFlow neural net 
 
 money_ball.py is built from Oracle's Elixir's dataset: https://oracleselixir-downloadable-match-data.s3-us-west-2.amazonaws.com/2020_LoL_esports_match_data_from_OraclesElixir_20200908.csv
 
